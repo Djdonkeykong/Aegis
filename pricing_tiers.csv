@@ -1,0 +1,169 @@
+Country,Country Code,Currency,PPP Tier,PPP Adjustment Factor,Yearly Price (USD Equiv),Monthly Price (USD Equiv),App Store Yearly Tier (USD),App Store Monthly Tier (USD),Notes
+United States,US,USD,1,1.00,41.99,8.99,41.99,8.99,Base price
+Albania,AL,ALL,3,0.35,14.70,3.15,14.99,2.99,Upper-middle income
+Algeria,DZ,DZD,3,0.35,14.70,3.15,14.99,2.99,Lower-middle income
+Angola,AO,AOA,3,0.35,14.70,3.15,14.99,2.99,Lower-middle income
+Anguilla,AI,XCD,2,0.65,27.29,5.84,27.99,5.99,High income
+Antigua and Barbuda,AG,XCD,2,0.65,27.29,5.84,27.99,5.99,High income
+Argentina,AR,ARS,3,0.35,14.70,3.15,14.99,2.99,Upper-middle income - volatile currency
+Armenia,AM,AMD,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Australia,AU,AUD,1,0.92,38.63,8.27,38.99,8.49,High income
+Austria,AT,EUR,1,0.97,40.73,8.72,40.99,8.99,High income
+Azerbaijan,AZ,AZN,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Bahamas,BS,BSD,1,0.85,35.69,7.64,35.99,7.99,High income
+Bahrain,BH,BHD,1,0.78,32.75,7.01,32.99,6.99,High income
+Bangladesh,BD,BDT,5,0.20,9.99,1.99,9.99,1.99,Lower-middle income - not always on App Store
+Barbados,BB,BBD,2,0.65,27.29,5.84,27.99,5.99,High income
+Belarus,BY,BYN,3,0.35,14.70,3.15,14.99,2.99,Upper-middle income
+Belgium,BE,EUR,1,0.95,39.89,8.54,39.99,8.49,High income
+Belize,BZ,BZD,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Benin,BJ,XOF,5,0.20,9.99,1.99,9.99,1.99,Low income
+Bermuda,BM,BMD,1,1.00,41.99,8.99,41.99,8.99,High income
+Bhutan,BT,BTN,4,0.30,12.60,2.70,12.99,2.49,Lower-middle income
+Bolivia,BO,BOB,4,0.30,12.60,2.70,12.99,2.49,Lower-middle income
+Bosnia and Herzegovina,BA,BAM,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Botswana,BW,BWP,3,0.45,18.90,4.05,18.99,3.99,Upper-middle income
+Brazil,BR,BRL,3,0.45,18.90,4.05,18.99,3.99,Upper-middle income
+British Virgin Islands,VG,USD,1,0.85,35.69,7.64,35.99,7.99,High income
+Brunei,BN,BND,1,0.85,35.69,7.64,35.99,7.99,High income
+Bulgaria,BG,BGN,3,0.45,18.90,4.05,18.99,3.99,Upper-middle income
+Burkina Faso,BF,XOF,5,0.20,9.99,1.99,9.99,1.99,Low income
+Cambodia,KH,KHR,4,0.30,12.60,2.70,12.99,2.49,Lower-middle income
+Cameroon,CM,XAF,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income
+Canada,CA,CAD,1,0.94,39.47,8.45,39.99,8.49,High income
+Cape Verde,CV,CVE,3,0.40,16.80,3.60,16.99,3.49,Lower-middle income
+Cayman Islands,KY,KYD,1,1.00,41.99,8.99,41.99,8.99,High income
+Chad,TD,XAF,5,0.20,9.99,1.99,9.99,1.99,Low income
+Chile,CL,CLP,2,0.60,25.19,5.39,24.99,5.49,High income
+China,CN,CNY,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income - large market
+Colombia,CO,COP,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Congo (Democratic Republic),CD,CDF,5,0.20,9.99,1.99,9.99,1.99,Low income
+Congo (Republic),CG,XAF,4,0.30,12.60,2.70,12.99,2.49,Lower-middle income
+Costa Rica,CR,CRC,2,0.60,25.19,5.39,24.99,5.49,High income
+Croatia,HR,EUR,2,0.65,27.29,5.84,27.99,5.99,High income
+Cyprus,CY,EUR,1,0.85,35.69,7.64,35.99,7.99,High income
+Czechia,CZ,CZK,2,0.65,27.29,5.84,27.99,5.99,High income
+Denmark,DK,DKK,1,1.00,41.99,8.99,41.99,8.99,High income
+Dominica,DM,XCD,3,0.45,18.90,4.05,18.99,3.99,Upper-middle income
+Dominican Republic,DO,DOP,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Ecuador,EC,USD,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Egypt,EG,EGP,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income
+El Salvador,SV,USD,4,0.30,12.60,2.70,12.99,2.49,Lower-middle income
+Estonia,EE,EUR,2,0.70,29.39,6.29,29.99,6.49,High income
+Eswatini,SZ,SZL,4,0.30,12.60,2.70,12.99,2.49,Lower-middle income
+Ethiopia,ET,ETB,5,0.20,9.99,1.99,9.99,1.99,Low income - not always on App Store
+Fiji,FJ,FJD,3,0.45,18.90,4.05,18.99,3.99,Upper-middle income
+Finland,FI,EUR,1,1.00,41.99,8.99,41.99,8.99,High income
+France,FR,EUR,1,0.95,39.89,8.54,39.99,8.49,High income
+Gabon,GA,XAF,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Gambia,GM,GMD,5,0.20,9.99,1.99,9.99,1.99,Low income
+Georgia,GE,GEL,3,0.35,14.70,3.15,14.99,2.99,Upper-middle income
+Germany,DE,EUR,1,0.95,39.89,8.54,39.99,8.49,High income
+Ghana,GH,GHS,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income
+Greece,GR,EUR,2,0.70,29.39,6.29,29.99,6.49,High income - lower PPP
+Grenada,GD,XCD,3,0.45,18.90,4.05,18.99,3.99,Upper-middle income
+Guatemala,GT,GTQ,4,0.30,12.60,2.70,12.99,2.49,Upper-middle income
+Guinea-Bissau,GW,XOF,5,0.20,9.99,1.99,9.99,1.99,Low income
+Guyana,GY,GYD,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Honduras,HN,HNL,4,0.30,12.60,2.70,12.99,2.49,Lower-middle income
+Hong Kong,HK,HKD,1,0.85,35.69,7.64,35.99,7.99,High income
+Hungary,HU,HUF,2,0.55,23.09,4.94,22.99,4.99,High income - lower PPP
+Iceland,IS,ISK,1,1.00,41.99,8.99,41.99,8.99,High income
+India,IN,INR,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income - large market
+Indonesia,ID,IDR,4,0.25,10.50,2.25,10.99,2.29,Upper-middle income - low PPP
+Iran,IR,IRR,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income - sanctions may apply
+Iraq,IQ,IQD,3,0.35,14.70,3.15,14.99,2.99,Upper-middle income
+Ireland,IE,EUR,1,1.00,41.99,8.99,41.99,8.99,High income
+Israel,IL,ILS,1,0.82,34.43,7.37,34.99,7.49,High income
+Italy,IT,EUR,1,0.90,37.79,8.09,37.99,7.99,High income
+Ivory Coast,CI,XOF,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income
+Jamaica,JM,JMD,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Japan,JP,JPY,2,0.55,23.09,4.94,22.99,4.99,High income but low price level
+Jordan,JO,JOD,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Kazakhstan,KZ,KZT,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Kenya,KE,KES,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income
+Kosovo,XK,EUR,3,0.35,14.70,3.15,14.99,2.99,Lower-middle income
+Kuwait,KW,KWD,1,0.78,32.75,7.01,32.99,6.99,High income
+Kyrgyzstan,KG,KGS,5,0.20,9.99,1.99,9.99,1.99,Lower-middle income
+Laos,LA,LAK,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income
+Latvia,LV,EUR,2,0.65,27.29,5.84,27.99,5.99,High income
+Lebanon,LB,LBP,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income - volatile
+Liberia,LR,LRD,5,0.20,9.99,1.99,9.99,1.99,Low income
+Lithuania,LT,EUR,2,0.65,27.29,5.84,27.99,5.99,High income
+Luxembourg,LU,EUR,1,1.00,41.99,8.99,41.99,8.99,High income
+Macau,MO,MOP,1,0.90,37.79,8.09,37.99,7.99,High income
+Madagascar,MG,MGA,5,0.20,9.99,1.99,9.99,1.99,Low income
+Malawi,MW,MWK,5,0.20,9.99,1.99,9.99,1.99,Low income
+Malaysia,MY,MYR,3,0.45,18.90,4.05,18.99,3.99,Upper-middle income
+Mali,ML,XOF,5,0.20,9.99,1.99,9.99,1.99,Low income
+Malta,MT,EUR,1,0.85,35.69,7.64,35.99,7.99,High income
+Mauritania,MR,MRU,5,0.20,9.99,1.99,9.99,1.99,Lower-middle income
+Mauritius,MU,MUR,2,0.60,25.19,5.39,24.99,5.49,Upper-middle income
+Mexico,MX,MXN,3,0.45,18.90,4.05,18.99,3.99,Upper-middle income
+Moldova,MD,MDL,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income
+Mongolia,MN,MNT,4,0.30,12.60,2.70,12.99,2.49,Lower-middle income
+Montenegro,ME,EUR,3,0.45,18.90,4.05,18.99,3.99,Upper-middle income
+Montserrat,MS,XCD,2,0.65,27.29,5.84,27.99,5.99,Territory
+Morocco,MA,MAD,3,0.40,16.80,3.60,16.99,3.49,Lower-middle income
+Mozambique,MZ,MZN,5,0.20,9.99,1.99,9.99,1.99,Low income
+Myanmar,MM,MMK,5,0.20,9.99,1.99,9.99,1.99,Low income
+Namibia,NA,NAD,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Nepal,NP,NPR,5,0.20,9.99,1.99,9.99,1.99,Low income
+Netherlands,NL,EUR,1,0.97,40.73,8.72,40.99,8.99,High income
+New Zealand,NZ,NZD,1,0.85,35.69,7.64,35.99,7.99,High income
+Nicaragua,NI,NIO,4,0.30,12.60,2.70,12.99,2.49,Lower-middle income
+Niger,NE,XOF,5,0.20,9.99,1.99,9.99,1.99,Low income
+Nigeria,NG,NGN,5,0.20,9.99,1.99,9.99,1.99,Lower-middle income
+North Macedonia,MK,MKD,3,0.35,14.70,3.15,14.99,2.99,Upper-middle income
+Norway,NO,NOK,1,1.05,41.99,8.99,41.99,8.99,High income - capped at base
+Oman,OM,OMR,2,0.70,29.39,6.29,29.99,6.49,High income
+Pakistan,PK,PKR,5,0.20,9.99,1.99,9.99,1.99,Lower-middle income
+Panama,PA,USD,2,0.60,25.19,5.39,24.99,5.49,High income
+Papua New Guinea,PG,PGK,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income
+Paraguay,PY,PYG,3,0.35,14.70,3.15,14.99,2.99,Upper-middle income
+Peru,PE,PEN,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Philippines,PH,PHP,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income
+Poland,PL,PLN,2,0.60,25.19,5.39,24.99,5.49,High income - lower PPP
+Portugal,PT,EUR,2,0.75,31.49,6.74,31.99,6.99,High income - lower PPP
+Qatar,QA,QAR,1,0.72,30.23,6.47,29.99,6.49,High income - lower price level
+Romania,RO,RON,3,0.45,18.90,4.05,18.99,3.99,Upper-middle income
+Russia,RU,RUB,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Rwanda,RW,RWF,5,0.20,9.99,1.99,9.99,1.99,Low income
+Sao Tome and Principe,ST,STN,4,0.30,12.60,2.70,12.99,2.49,Lower-middle income
+Saudi Arabia,SA,SAR,1,0.87,36.53,7.82,36.99,7.99,High income
+Senegal,SN,XOF,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income
+Serbia,RS,RSD,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Seychelles,SC,SCR,2,0.60,25.19,5.39,24.99,5.49,High income
+Sierra Leone,SL,SLE,5,0.20,9.99,1.99,9.99,1.99,Low income
+Singapore,SG,SGD,1,0.90,37.79,8.09,37.99,7.99,High income
+Slovakia,SK,EUR,2,0.70,29.39,6.29,29.99,6.49,High income
+Slovenia,SI,EUR,2,0.75,31.49,6.74,31.99,6.99,High income
+South Africa,ZA,ZAR,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+South Korea,KR,KRW,2,0.65,27.29,5.84,27.99,5.99,High income - lower price level
+Spain,ES,EUR,1,0.85,35.69,7.64,35.99,7.99,High income
+Sri Lanka,LK,LKR,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income
+St. Kitts and Nevis,KN,XCD,2,0.65,27.29,5.84,27.99,5.99,High income
+St. Lucia,LC,XCD,3,0.45,18.90,4.05,18.99,3.99,Upper-middle income
+St. Vincent and the Grenadines,VC,XCD,3,0.45,18.90,4.05,18.99,3.99,Upper-middle income
+Suriname,SR,SRD,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Sweden,SE,SEK,1,1.00,41.99,8.99,41.99,8.99,High income
+Switzerland,CH,CHF,1,1.10,41.99,8.99,41.99,8.99,High income - capped at base
+Taiwan,TW,TWD,2,0.55,23.09,4.94,22.99,4.99,High income - lower price level
+Tajikistan,TJ,TJS,5,0.20,9.99,1.99,9.99,1.99,Low income
+Tanzania,TZ,TZS,5,0.20,9.99,1.99,9.99,1.99,Low income
+Thailand,TH,THB,3,0.45,18.90,4.05,18.99,3.99,Upper-middle income
+Trinidad and Tobago,TT,TTD,2,0.65,27.29,5.84,27.99,5.99,High income
+Tunisia,TN,TND,3,0.35,14.70,3.15,14.99,2.99,Lower-middle income
+Turkey,TR,TRY,3,0.40,16.80,3.60,16.99,3.49,Upper-middle income
+Turkmenistan,TM,TMT,4,0.30,12.60,2.70,12.99,2.49,Upper-middle income
+Turks and Caicos,TC,USD,1,0.85,35.69,7.64,35.99,7.99,High income
+Uganda,UG,UGX,5,0.20,9.99,1.99,9.99,1.99,Low income
+Ukraine,UA,UAH,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income
+United Arab Emirates,AE,AED,1,0.85,35.69,7.64,35.99,7.99,High income
+United Kingdom,GB,GBP,1,0.99,41.57,8.91,41.99,8.99,High income
+Uruguay,UY,UYU,2,0.65,27.29,5.84,27.99,5.99,High income
+Uzbekistan,UZ,UZS,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income
+Venezuela,VE,VES,4,0.25,10.50,2.25,10.99,2.29,Volatile economy
+Vietnam,VN,VND,4,0.25,10.50,2.25,10.99,2.29,Lower-middle income
+Zambia,ZM,ZMW,5,0.20,9.99,1.99,9.99,1.99,Low income
+Zimbabwe,ZW,ZWL,5,0.20,9.99,1.99,9.99,1.99,Low income

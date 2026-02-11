@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command:*)",
+      "Bash(wc:*)",
+      "Bash(del \"D:\\\\Drug Interaction Checker\\\\test\\\\widget_test.dart\")",
+      "Bash(flutter pub get:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(flutter pub add:*)",
+      "Bash(find:*)",
+      "Bash(python3:*)",
+      "Bash(python -c:*)",
+      "Bash(dart run:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}

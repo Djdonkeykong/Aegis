@@ -1,0 +1,68 @@
+name: drug_interaction_checker
+description: Drug interaction checker with medication tracking and pill reminders
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+  http: ^1.2.0
+  csv: ^6.0.0
+  google_fonts: ^6.2.1
+  shared_preferences: ^2.3.4
+  intl: ^0.19.0
+  uuid: ^4.5.1
+  flutter_svg: ^2.2.3
+  flutter_slidable: ^4.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/app-logo.png"
+  adaptive_icon_background: "#EBF0F1"
+  adaptive_icon_foreground: "assets/app-logo.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/ddinter_downloads_code_A.csv
+    - assets/ddinter_downloads_code_B.csv
+    - assets/ddinter_downloads_code_D.csv
+    - assets/ddinter_downloads_code_H.csv
+    - assets/ddinter_downloads_code_L.csv
+    - assets/ddinter_downloads_code_P.csv
+    - assets/ddinter_downloads_code_R.csv
+    - assets/ddinter_downloads_code_V.csv
+    - assets/db_drug_interactions.csv
+    - assets/fireicon.png
+    - assets/logo@4x.png
+    - assets/cog-wheel-silhouette.png
+    - assets/fluent--pill-24-filled.svg
+    - assets/healthicons--pill-1-24px.svg
+    - assets/chart-bar.svg
+    - assets/chart-bar--fill.svg
+
+  fonts:
+    - family: snaplook-icons
+      fonts:
+        - asset: assets/fonts/snaplook-icons.ttf
+    - family: snaplook-heart-outline
+      fonts:
+        - asset: assets/fonts/snaplook-heart-outline.ttf
+    - family: medcheck-icons
+      fonts:
+        - asset: assets/fonts/medcheck-icons.ttf

@@ -1,0 +1,12 @@
+{
+  "aspirin-warfarin sodium": {
+    "severity": "\ud83d\udd34 High",
+    "summary": "Taking warfarin sodium with aspirin may increase the risk of serious bleeding. This is because both medications affect blood clotting, and using them together can lead to a higher risk of bleeding complications. Patients taking these medications should be monitored for signs of bleeding.",
+    "timestamp": "2026-02-05T19:34:48.719626"
+  },
+  "aspirin-ibuprofen": {
+    "severity": "\ud83d\udd34 High",
+    "summary": "Taking aspirin with naproxen may reduce its effectiveness as an antiplatelet agent, and this effect is most pronounced when taking lower doses. Monitoring for signs of bleeding is recommended when using these medications together. This interaction is more likely to occur with prescription doses or enteric-coated naproxen.",
+    "timestamp": "2026-02-05T20:23:31.874660"
+  }
+}
