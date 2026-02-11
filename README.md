@@ -1,4 +1,4 @@
-# drug_interaction_checker
+# Aegis - Drug Interaction Checker
 
 A new Flutter project.
 
