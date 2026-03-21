@@ -20,6 +20,7 @@ class AppConstants {
   ];
 
   static const String kaggleCsvAsset = 'assets/db_drug_interactions.csv';
+  static const String drugAliasesAsset = 'assets/drug_aliases.json';
 
   // Disclaimers
   static const String disclaimer =

@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/ai_service.dart';
 import '../services/drug_service.dart';
+import '../services/interaction_summary_cache_service.dart';
+import '../services/openfda_service.dart';
+import '../services/rxnav_service.dart';
 import '../models/interaction_result.dart';
 
 // AI Service provider - swap implementation here for cloud API later
@@ -9,9 +12,31 @@ final aiServiceProvider = Provider<AiService>((ref) {
 });
 
 // Drug Service provider
+final rxNavServiceProvider = Provider<RxNavService>((ref) {
+  return RxNavService();
+});
+
+final openFdaServiceProvider = Provider<OpenFdaService>((ref) {
+  return OpenFdaService();
+});
+
+final interactionSummaryCacheServiceProvider =
+    Provider<InteractionSummaryCacheService>((ref) {
+  return InteractionSummaryCacheService();
+});
+
+// Drug Service provider
 final drugServiceProvider = Provider<DrugService>((ref) {
   final aiService = ref.watch(aiServiceProvider);
-  return DrugService(aiService: aiService);
+  final rxNavService = ref.watch(rxNavServiceProvider);
+  final openFdaService = ref.watch(openFdaServiceProvider);
+  final cacheService = ref.watch(interactionSummaryCacheServiceProvider);
+  return DrugService(
+    aiService: aiService,
+    rxNavService: rxNavService,
+    openFdaService: openFdaService,
+    summaryCacheService: cacheService,
+  );
 });
 
 // Data loading state
@@ -22,7 +47,7 @@ final drugDataLoadedProvider = FutureProvider<void>((ref) async {
 
 // Drug suggestions for autocomplete
 final drugSuggestionsProvider =
-    Provider.family<List<String>, String>((ref, input) {
+    Provider.family<List<DrugSuggestion>, String>((ref, input) {
   final drugService = ref.read(drugServiceProvider);
   return drugService.getSuggestions(input);
 });

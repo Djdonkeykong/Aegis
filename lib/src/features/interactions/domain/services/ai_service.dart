@@ -9,10 +9,12 @@ abstract class AiService {
 class OllamaAiService implements AiService {
   final String endpoint;
   final String model;
+  final Duration timeout;
 
   OllamaAiService({
     this.endpoint = AppConstants.ollamaEndpoint,
     this.model = AppConstants.ollamaModel,
+    this.timeout = const Duration(seconds: 8),
   });
 
   @override
@@ -29,7 +31,7 @@ class OllamaAiService implements AiService {
         Uri.parse(endpoint),
         headers: {'Content-Type': 'application/json'},
         body: payload,
-      );
+      ).timeout(timeout);
 
       if (res.statusCode == 200) {
         final json = jsonDecode(res.body);

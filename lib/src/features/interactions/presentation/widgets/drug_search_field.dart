@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/providers/interaction_providers.dart';
+import '../../domain/services/drug_service.dart';
 
 class DrugSearchField extends ConsumerStatefulWidget {
   final TextEditingController controller;
@@ -17,7 +18,7 @@ class DrugSearchField extends ConsumerStatefulWidget {
 }
 
 class _DrugSearchFieldState extends ConsumerState<DrugSearchField> {
-  List<String> _suggestions = [];
+  List<DrugSuggestion> _suggestions = [];
   bool _showSuggestions = false;
 
   void _onChanged(String value) {
@@ -35,8 +36,8 @@ class _DrugSearchFieldState extends ConsumerState<DrugSearchField> {
     });
   }
 
-  void _selectSuggestion(String suggestion) {
-    widget.controller.text = suggestion;
+  void _selectSuggestion(DrugSuggestion suggestion) {
+    widget.controller.text = suggestion.value;
     setState(() {
       _suggestions = [];
       _showSuggestions = false;
@@ -91,7 +92,7 @@ class _DrugSearchFieldState extends ConsumerState<DrugSearchField> {
                 final suggestion = _suggestions[index];
                 return ListTile(
                   dense: true,
-                  title: Text(suggestion),
+                  title: Text(suggestion.displayLabel),
                   leading: const Icon(Icons.medication, size: 18),
                   onTap: () => _selectSuggestion(suggestion),
                 );

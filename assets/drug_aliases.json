@@ -1,0 +1,16 @@
+{
+  "Acetylsalicylic acid": ["Aspirin", "ASA"],
+  "Acetaminophen": ["Tylenol", "Paracetamol", "Panadol"],
+  "Ibuprofen": ["Advil", "Motrin"],
+  "Naproxen": ["Aleve", "Naprosyn"],
+  "Warfarin": ["Warfarin sodium", "Coumadin", "Jantoven"],
+  "Apixaban": ["Eliquis"],
+  "Rivaroxaban": ["Xarelto"],
+  "Metformin": ["Glucophage"],
+  "Omeprazole": ["Prilosec", "Losec"],
+  "Atorvastatin": ["Lipitor"],
+  "Simvastatin": ["Zocor"],
+  "Rosuvastatin": ["Crestor"],
+  "Lisinopril": ["Zestril", "Prinivil"],
+  "Levothyroxine": ["Synthroid"]
+}

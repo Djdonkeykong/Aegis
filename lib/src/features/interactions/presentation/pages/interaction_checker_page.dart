@@ -20,12 +20,16 @@ class _InteractionCheckerPageState
     extends ConsumerState<InteractionCheckerPage> {
   final _drug1Controller = TextEditingController();
   final _drug2Controller = TextEditingController();
+  final _scrollController = ScrollController();
 
   bool _singleMode = false;
   bool _loading = false;
   String? _errorMessage;
   InteractionResult? _pairResult;
   SingleDrugResult? _singleResult;
+  final Set<SeverityLevel> _expandedSingleDrugSections = {
+    SeverityLevel.high,
+  };
 
   @override
   void initState() {
@@ -50,9 +54,14 @@ class _InteractionCheckerPageState
     setState(() {
       _loading = true;
       _errorMessage = null;
-      _pairResult = null;
-      _singleResult = null;
+      if (_singleMode) {
+        _singleResult = null;
+      } else {
+        _pairResult = null;
+      }
     });
+
+    await _scrollToTop();
 
     try {
       final drugService = ref.read(drugServiceProvider);
@@ -70,6 +79,25 @@ class _InteractionCheckerPageState
     }
   }
 
+  Future<void> _openTwoDrugCheckFromSingle(String interactionDrug) async {
+    final primaryDrug = _singleResult?.recognizedDrug ?? _drug1Controller.text.trim();
+    if (primaryDrug.isEmpty) return;
+
+    final cleanedInteractionDrug =
+        interactionDrug.replaceAll(RegExp(r'\s*\(.*\)\s*$'), '').trim();
+
+    _drug1Controller.text = primaryDrug;
+    _drug2Controller.text = cleanedInteractionDrug;
+
+    setState(() {
+      _singleMode = false;
+      _pairResult = null;
+      _errorMessage = null;
+    });
+
+    await _performCheck();
+  }
+
   @override
   Widget build(BuildContext context) {
     final spacing = context.spacing;
@@ -81,6 +109,8 @@ class _InteractionCheckerPageState
       ),
       body: SafeArea(
         child: SingleChildScrollView(
+          key: const PageStorageKey('interaction-checker-scroll'),
+          controller: _scrollController,
           padding: EdgeInsets.all(spacing.m),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -192,7 +222,12 @@ class _InteractionCheckerPageState
                 InteractionResultCard(result: _pairResult!),
 
               if (_singleResult != null)
-                SingleDrugResultCard(result: _singleResult!),
+                SingleDrugResultCard(
+                  result: _singleResult!,
+                  onInteractionTap: _openTwoDrugCheckFromSingle,
+                  expandedSections: _expandedSingleDrugSections,
+                  onSectionExpansionChanged: _handleSingleDrugSectionToggle,
+                ),
 
               SizedBox(height: spacing.xxl),
 
@@ -215,6 +250,26 @@ class _InteractionCheckerPageState
   void dispose() {
     _drug1Controller.dispose();
     _drug2Controller.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  Future<void> _scrollToTop() async {
+    if (!_scrollController.hasClients) return;
+    await _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
+  }
+
+  void _handleSingleDrugSectionToggle(SeverityLevel severity, bool expanded) {
+    setState(() {
+      if (expanded) {
+        _expandedSingleDrugSections.add(severity);
+      } else {
+        _expandedSingleDrugSections.remove(severity);
+      }
+    });
   }
 }

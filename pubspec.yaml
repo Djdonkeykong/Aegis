@@ -48,6 +48,7 @@ flutter:
     - assets/ddinter_downloads_code_R.csv
     - assets/ddinter_downloads_code_V.csv
     - assets/db_drug_interactions.csv
+    - assets/drug_aliases.json
     - assets/fireicon.png
     - assets/logo@4x.png
     - assets/cog-wheel-silhouette.png
