@@ -34,6 +34,8 @@ class _InteractionCheckerPageState
   @override
   void initState() {
     super.initState();
+    _drug1Controller.addListener(_handleDrugInputChanged);
+    _drug2Controller.addListener(_handleDrugInputChanged);
     // Trigger CSV data loading
     Future.microtask(() => ref.read(drugDataLoadedProvider));
   }
@@ -89,11 +91,7 @@ class _InteractionCheckerPageState
     _drug1Controller.text = primaryDrug;
     _drug2Controller.text = cleanedInteractionDrug;
 
-    setState(() {
-      _singleMode = false;
-      _pairResult = null;
-      _errorMessage = null;
-    });
+    _setMode(false);
 
     await _performCheck();
   }
@@ -106,6 +104,13 @@ class _InteractionCheckerPageState
     return Scaffold(
       appBar: AppBar(
         title: const Text('Interaction Checker'),
+        actions: [
+          IconButton(
+            tooltip: 'Clear search',
+            icon: const Icon(Icons.delete_sweep_outlined),
+            onPressed: _loading ? null : _clearSearchState,
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -120,15 +125,37 @@ class _InteractionCheckerPageState
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ChoiceChip(
-                    label: const Text('Two Drugs'),
+                    label: Text(
+                      'Two Drugs',
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            color: !_singleMode
+                                ? AppColors.onPrimaryContainer
+                                : AppColors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
                     selected: !_singleMode,
-                    onSelected: (_) => setState(() => _singleMode = false),
+                    backgroundColor: AppColors.surface,
+                    selectedColor: AppColors.primaryContainer,
+                    side: const BorderSide(color: AppColors.outline),
+                    onSelected: (_) => _setMode(false),
                   ),
                   SizedBox(width: spacing.m),
                   ChoiceChip(
-                    label: const Text('One Drug'),
+                    label: Text(
+                      'One Drug',
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            color: _singleMode
+                                ? AppColors.onPrimaryContainer
+                                : AppColors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
                     selected: _singleMode,
-                    onSelected: (_) => setState(() => _singleMode = true),
+                    backgroundColor: AppColors.surface,
+                    selectedColor: AppColors.primaryContainer,
+                    side: const BorderSide(color: AppColors.outline),
+                    onSelected: (_) => _setMode(true),
                   ),
                 ],
               ),
@@ -248,6 +275,8 @@ class _InteractionCheckerPageState
 
   @override
   void dispose() {
+    _drug1Controller.removeListener(_handleDrugInputChanged);
+    _drug2Controller.removeListener(_handleDrugInputChanged);
     _drug1Controller.dispose();
     _drug2Controller.dispose();
     _scrollController.dispose();
@@ -270,6 +299,44 @@ class _InteractionCheckerPageState
       } else {
         _expandedSingleDrugSections.remove(severity);
       }
+    });
+  }
+
+  void _handleDrugInputChanged() {
+    if (_loading) return;
+    if (_pairResult == null && _singleResult == null && _errorMessage == null) {
+      return;
+    }
+
+    setState(() {
+      _pairResult = null;
+      _singleResult = null;
+      _errorMessage = null;
+    });
+  }
+
+  void _setMode(bool singleMode) {
+    if (_singleMode == singleMode) return;
+
+    setState(() {
+      _singleMode = singleMode;
+      _pairResult = null;
+      _singleResult = null;
+      _errorMessage = null;
+    });
+  }
+
+  void _clearSearchState() {
+    _drug1Controller.clear();
+    _drug2Controller.clear();
+
+    setState(() {
+      _pairResult = null;
+      _singleResult = null;
+      _errorMessage = null;
+      _expandedSingleDrugSections
+        ..clear()
+        ..add(SeverityLevel.high);
     });
   }
 }
