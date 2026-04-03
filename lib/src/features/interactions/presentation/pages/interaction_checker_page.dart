@@ -82,7 +82,8 @@ class _InteractionCheckerPageState
   }
 
   Future<void> _openTwoDrugCheckFromSingle(String interactionDrug) async {
-    final primaryDrug = _singleResult?.recognizedDrug ?? _drug1Controller.text.trim();
+    final primaryDrug =
+        _singleResult?.recognizedDrug ?? _drug1Controller.text.trim();
     if (primaryDrug.isEmpty) return;
 
     final cleanedInteractionDrug =
@@ -124,38 +125,18 @@ class _InteractionCheckerPageState
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ChoiceChip(
-                    label: Text(
-                      'Two Drugs',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: !_singleMode
-                                ? AppColors.onPrimaryContainer
-                                : AppColors.textPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
+                  _buildModeChip(
+                    context: context,
+                    label: 'Two Drugs',
                     selected: !_singleMode,
-                    backgroundColor: AppColors.surface,
-                    selectedColor: AppColors.primaryContainer,
-                    side: const BorderSide(color: AppColors.outline),
-                    onSelected: (_) => _setMode(false),
+                    onSelected: () => _setMode(false),
                   ),
                   SizedBox(width: spacing.m),
-                  ChoiceChip(
-                    label: Text(
-                      'One Drug',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: _singleMode
-                                ? AppColors.onPrimaryContainer
-                                : AppColors.textPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
+                  _buildModeChip(
+                    context: context,
+                    label: 'One Drug',
                     selected: _singleMode,
-                    backgroundColor: AppColors.surface,
-                    selectedColor: AppColors.primaryContainer,
-                    side: const BorderSide(color: AppColors.outline),
-                    onSelected: (_) => _setMode(true),
+                    onSelected: () => _setMode(true),
                   ),
                 ],
               ),
@@ -338,5 +319,34 @@ class _InteractionCheckerPageState
         ..clear()
         ..add(SeverityLevel.high);
     });
+  }
+
+  Widget _buildModeChip({
+    required BuildContext context,
+    required String label,
+    required bool selected,
+    required VoidCallback onSelected,
+  }) {
+    return ChoiceChip(
+      label: Text(
+        label,
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: selected
+                  ? AppColors.onPrimaryContainer
+                  : AppColors.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
+      ),
+      selected: selected,
+      showCheckmark: true,
+      color: WidgetStateProperty.resolveWith<Color?>((states) {
+        if (states.contains(WidgetState.selected)) {
+          return AppColors.primaryContainer;
+        }
+        return AppColors.surface;
+      }),
+      side: const BorderSide(color: AppColors.outline),
+      onSelected: (_) => onSelected(),
+    );
   }
 }

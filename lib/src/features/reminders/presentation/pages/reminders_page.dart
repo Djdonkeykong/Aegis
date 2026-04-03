@@ -24,7 +24,7 @@ class RemindersPage extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.alarm_off,
                       size: 64,
                       color: AppColors.textTertiary,
@@ -53,6 +53,9 @@ class RemindersPage extends ConsumerWidget {
               itemCount: medications.length,
               itemBuilder: (context, index) {
                 final med = medications[index];
+                final schedule = med.reminderTimes.isNotEmpty
+                    ? med.reminderTimes.join(', ')
+                    : (med.frequency ?? 'No schedule set');
                 return Card(
                   margin: EdgeInsets.only(bottom: spacing.s),
                   child: ListTile(
@@ -70,7 +73,7 @@ class RemindersPage extends ConsumerWidget {
                     ),
                     title: Text(med.name),
                     subtitle: Text(
-                      med.frequency ?? 'No schedule set',
+                      schedule,
                       style: textTheme.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../interactions/domain/services/openfda_service.dart';
 import '../models/medication.dart';
 
 // In-memory medication list for now. Will be replaced with Supabase in a future phase.
@@ -28,8 +29,7 @@ final medicationListProvider =
 
 // Tracks which medications have been taken on which dates.
 // State: Map<"yyyy-MM-dd", Set<medicationId>>
-class MedicationLogNotifier
-    extends StateNotifier<Map<String, Set<String>>> {
+class MedicationLogNotifier extends StateNotifier<Map<String, Set<String>>> {
   MedicationLogNotifier() : super({});
 
   void toggle(String dateKey, String medId) {
@@ -53,4 +53,20 @@ final medicationLogProvider =
     StateNotifierProvider<MedicationLogNotifier, Map<String, Set<String>>>(
         (ref) {
   return MedicationLogNotifier();
+});
+
+final openFdaMedicationServiceProvider = Provider<OpenFdaService>((ref) {
+  return OpenFdaService();
+});
+
+final medicationReferenceProvider =
+    FutureProvider.family<OpenFdaMedicationReference?, String>(
+        (ref, query) async {
+  final trimmed = query.trim();
+  if (trimmed.length < 2) {
+    return null;
+  }
+
+  final service = ref.read(openFdaMedicationServiceProvider);
+  return service.fetchMedicationReference(trimmed);
 });

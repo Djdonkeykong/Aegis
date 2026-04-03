@@ -38,7 +38,7 @@ class MedicationsPage extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.medication_liquid_outlined,
                       size: 64,
                       color: AppColors.textTertiary,
@@ -81,6 +81,14 @@ class _MedicationCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spacing = context.spacing;
+    final schedule = medication.reminderTimes.isNotEmpty
+        ? medication.reminderTimes.join(', ')
+        : (medication.frequency ?? 'As needed');
+    final details = <String>[
+      if (medication.dosage != null && medication.dosage!.isNotEmpty)
+        medication.dosage!,
+      schedule,
+    ].join(' - ');
 
     return Card(
       margin: EdgeInsets.only(bottom: spacing.s),
@@ -109,12 +117,17 @@ class _MedicationCard extends ConsumerWidget {
         ),
         subtitle: medication.dosage != null
             ? Text(
-                '${medication.dosage} - ${medication.frequency ?? 'As needed'}',
+                details,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                     ),
               )
-            : null,
+            : Text(
+                schedule,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+              ),
         trailing: IconButton(
           icon: const Icon(Icons.delete_outline, color: AppColors.textTertiary),
           onPressed: () {

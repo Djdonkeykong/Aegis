@@ -65,7 +65,7 @@ class MainNavigation extends ConsumerWidget {
                     child: _NavigationItem(
                       icon: MedCheckIcons.calendarCheckDuotone,
                       selectedIcon: MedCheckIcons.calendarCheckFill,
-                      label: 'Today',
+                      label: 'Calendar',
                       isSelected: selectedIndex == 0,
                       onTap: () {
                         HapticFeedback.mediumImpact();
@@ -193,7 +193,8 @@ class _NavigationItemState extends State<_NavigationItem>
 
   @override
   Widget build(BuildContext context) {
-    final color = widget.isSelected ? AppColors.primary : AppColors.textTertiary;
+    final color =
+        widget.isSelected ? AppColors.primary : AppColors.textTertiary;
 
     return InkWell(
       onTap: widget.onTap,

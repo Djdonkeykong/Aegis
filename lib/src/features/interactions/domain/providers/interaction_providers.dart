@@ -47,9 +47,9 @@ final drugDataLoadedProvider = FutureProvider<void>((ref) async {
 
 // Drug suggestions for autocomplete
 final drugSuggestionsProvider =
-    Provider.family<List<DrugSuggestion>, String>((ref, input) {
+    FutureProvider.family<List<DrugSuggestion>, String>((ref, input) async {
   final drugService = ref.read(drugServiceProvider);
-  return drugService.getSuggestions(input);
+  return drugService.getSuggestionsAsync(input);
 });
 
 // Two-drug check
@@ -61,9 +61,8 @@ final twoDrugCheckProvider = FutureProvider.autoDispose
 });
 
 // Single-drug check
-final singleDrugCheckProvider =
-    FutureProvider.autoDispose.family<SingleDrugResult, String>(
-        (ref, drug) async {
+final singleDrugCheckProvider = FutureProvider.autoDispose
+    .family<SingleDrugResult, String>((ref, drug) async {
   final drugService = ref.read(drugServiceProvider);
   return drugService.checkOneDrug(drug);
 });

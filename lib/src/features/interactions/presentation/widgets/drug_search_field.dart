@@ -20,16 +20,23 @@ class DrugSearchField extends ConsumerStatefulWidget {
 class _DrugSearchFieldState extends ConsumerState<DrugSearchField> {
   List<DrugSuggestion> _suggestions = [];
   bool _showSuggestions = false;
+  int _requestId = 0;
 
-  void _onChanged(String value) {
+  Future<void> _onChanged(String value) async {
+    final requestId = ++_requestId;
+
     if (value.isEmpty) {
+      if (!mounted) return;
       setState(() {
         _suggestions = [];
         _showSuggestions = false;
       });
       return;
     }
-    final suggestions = ref.read(drugSuggestionsProvider(value));
+
+    final suggestions = await ref.read(drugSuggestionsProvider(value).future);
+    if (!mounted || requestId != _requestId) return;
+
     setState(() {
       _suggestions = suggestions;
       _showSuggestions = suggestions.isNotEmpty;
@@ -60,7 +67,11 @@ class _DrugSearchFieldState extends ConsumerState<DrugSearchField> {
                     icon: const Icon(Icons.clear, size: 18),
                     onPressed: () {
                       widget.controller.clear();
-                      _onChanged('');
+                      _requestId++;
+                      setState(() {
+                        _suggestions = [];
+                        _showSuggestions = false;
+                      });
                     },
                   )
                 : null,

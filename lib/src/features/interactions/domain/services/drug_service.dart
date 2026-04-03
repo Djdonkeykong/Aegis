@@ -79,6 +79,18 @@ class DrugService {
   bool get loadFailed => _dataLoadFailed;
   String get loadError => _loadErrorMsg;
 
+  void _indexDrugName(String name, {bool canonical = true}) {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return;
+    allDrugNames.add(trimmed);
+    if (canonical) {
+      _canonicalDrugNamesByNormalized.putIfAbsent(
+        _normalizeForLookup(trimmed),
+        () => trimmed,
+      );
+    }
+  }
+
   // ------------------------------------------------------------------
   // CSV Loading
   // ------------------------------------------------------------------
@@ -87,16 +99,6 @@ class DrugService {
 
     final List<InteractionMatch> allRows = [];
     final seenKeys = <String>{};
-
-    void addDrugName(String name) {
-      final trimmed = name.trim();
-      if (trimmed.isEmpty) return;
-      allDrugNames.add(trimmed);
-      _canonicalDrugNamesByNormalized.putIfAbsent(
-        _normalizeForLookup(trimmed),
-        () => trimmed,
-      );
-    }
 
     void addInteraction({
       required String source,
@@ -107,7 +109,9 @@ class DrugService {
       final cleanedDrugA = drugA.trim();
       final cleanedDrugB = drugB.trim();
       final cleanedLevel = level.trim();
-      if (cleanedDrugA.isEmpty || cleanedDrugB.isEmpty || cleanedLevel.isEmpty) {
+      if (cleanedDrugA.isEmpty ||
+          cleanedDrugB.isEmpty ||
+          cleanedLevel.isEmpty) {
         return;
       }
 
@@ -126,8 +130,8 @@ class DrugService {
           source: source,
         ),
       );
-      addDrugName(cleanedDrugA);
-      addDrugName(cleanedDrugB);
+      _indexDrugName(cleanedDrugA);
+      _indexDrugName(cleanedDrugB);
     }
 
     try {
@@ -207,23 +211,35 @@ class DrugService {
     final synonymTarget = _aliasToCanonicalByNormalized[normalizedInput];
     if (synonymTarget != null) {
       final normalizedSynonym = _normalizeForLookup(synonymTarget);
-      return _canonicalDrugNamesByNormalized[normalizedSynonym] ?? synonymTarget;
+      return _canonicalDrugNamesByNormalized[normalizedSynonym] ??
+          synonymTarget;
     }
 
     final exactMatch = _canonicalDrugNamesByNormalized[normalizedInput];
     if (exactMatch != null) return exactMatch;
 
+    await _enrichAliasesForInput(input);
+
+    final enrichedAliasTarget = _aliasToCanonicalByNormalized[normalizedInput];
+    if (enrichedAliasTarget != null) {
+      return _canonicalDrugNamesByNormalized[
+              _normalizeForLookup(enrichedAliasTarget)] ??
+          enrichedAliasTarget;
+    }
+
     final rxNavNormalized = await _rxNavService.normalizeDrugName(input);
     if (rxNavNormalized != null) {
       final normalizedRxNavName = _normalizeForLookup(rxNavNormalized);
-      final rxNavAliasTarget = _aliasToCanonicalByNormalized[normalizedRxNavName];
+      final rxNavAliasTarget =
+          _aliasToCanonicalByNormalized[normalizedRxNavName];
       if (rxNavAliasTarget != null) {
         return _canonicalDrugNamesByNormalized[
                 _normalizeForLookup(rxNavAliasTarget)] ??
             rxNavAliasTarget;
       }
 
-      final rxNavExactMatch = _canonicalDrugNamesByNormalized[normalizedRxNavName];
+      final rxNavExactMatch =
+          _canonicalDrugNamesByNormalized[normalizedRxNavName];
       if (rxNavExactMatch != null) return rxNavExactMatch;
     }
 
@@ -288,9 +304,31 @@ class DrugService {
             );
       });
 
-    return sortedSuggestions
-        .take(limit)
-        .toList();
+    return sortedSuggestions.take(limit).toList();
+  }
+
+  Future<List<DrugSuggestion>> getSuggestionsAsync(
+    String input, {
+    int limit = 6,
+  }) async {
+    await loadData();
+
+    final suggestions = <String, DrugSuggestion>{
+      for (final suggestion in getSuggestions(input, limit: limit * 2))
+        suggestion.value.toLowerCase(): suggestion,
+    };
+
+    if (suggestions.length >= limit) {
+      return suggestions.values.take(limit).toList();
+    }
+
+    await _enrichAliasesForInput(input);
+
+    for (final suggestion in getSuggestions(input, limit: limit * 2)) {
+      suggestions[suggestion.value.toLowerCase()] = suggestion;
+    }
+
+    return suggestions.values.take(limit).toList();
   }
 
   double _similarity(String s1, String s2) {
@@ -324,7 +362,8 @@ class DrugService {
   // ------------------------------------------------------------------
   // Search Interactions
   // ------------------------------------------------------------------
-  Future<List<InteractionMatch>> searchInteractions(String d1, {String? d2}) async {
+  Future<List<InteractionMatch>> searchInteractions(String d1,
+      {String? d2}) async {
     await loadData();
     if (_cachedInteractions == null) return [];
 
@@ -334,7 +373,8 @@ class DrugService {
     if (d2 != null && resolvedD2 == null) return [];
 
     final normalizedD1 = _normalizeForLookup(resolvedD1);
-    final normalizedD2 = resolvedD2 != null ? _normalizeForLookup(resolvedD2) : null;
+    final normalizedD2 =
+        resolvedD2 != null ? _normalizeForLookup(resolvedD2) : null;
 
     final List<InteractionMatch> matches = [];
 
@@ -502,6 +542,100 @@ class DrugService {
     }
   }
 
+  Future<void> _enrichAliasesForInput(String input) async {
+    final trimmed = input.trim();
+    if (trimmed.isEmpty) return;
+
+    final candidates = await _rxNavService.fetchDrugCandidates(trimmed);
+    if (candidates.isEmpty) return;
+
+    for (final candidate in candidates) {
+      final localCanonical = _findKnownCanonical(
+        candidate.candidateNames,
+      );
+      if (localCanonical == null) continue;
+
+      _registerAliases(
+        canonical: localCanonical,
+        aliases: {
+          trimmed,
+          ...candidate.candidateNames,
+        },
+      );
+    }
+  }
+
+  String? _findKnownCanonical(Iterable<String> names) {
+    for (final name in names) {
+      final normalized = _normalizeForLookup(name);
+      if (normalized.isEmpty) continue;
+
+      final aliasTarget = _aliasToCanonicalByNormalized[normalized];
+      if (aliasTarget != null) {
+        return _canonicalDrugNamesByNormalized[
+                _normalizeForLookup(aliasTarget)] ??
+            aliasTarget;
+      }
+
+      final exact = _canonicalDrugNamesByNormalized[normalized];
+      if (exact != null) {
+        return exact;
+      }
+    }
+
+    String? best;
+    double bestScore = 0.0;
+
+    for (final name in names) {
+      final normalized = _normalizeForLookup(name);
+      if (normalized.isEmpty) continue;
+
+      for (final entry in _canonicalDrugNamesByNormalized.entries) {
+        final score = _similarity(normalized, entry.key);
+        if (score > bestScore) {
+          bestScore = score;
+          best = entry.value;
+        }
+      }
+    }
+
+    if (bestScore >= 0.92) {
+      return best;
+    }
+
+    return null;
+  }
+
+  void _registerAliases({
+    required String canonical,
+    required Set<String> aliases,
+  }) {
+    final normalizedCanonical = _normalizeForLookup(canonical);
+    final existing = [
+      ...?_drugAliasesByCanonical[normalizedCanonical],
+    ];
+    final merged = <String>{
+      ...existing,
+      ...aliases
+          .map((alias) => alias.trim())
+          .where((alias) => alias.isNotEmpty && alias.trim() != canonical),
+    }.toList()
+      ..sort();
+
+    _drugAliasesByCanonical[normalizedCanonical] = merged;
+    _aliasToCanonicalByNormalized[normalizedCanonical] = canonical;
+    _canonicalDrugNamesByNormalized.putIfAbsent(
+      normalizedCanonical,
+      () => canonical,
+    );
+    _indexDrugName(canonical);
+
+    for (final alias in merged) {
+      _aliasToCanonicalByNormalized[_normalizeForLookup(alias)] = canonical;
+      _indexDrugName(alias, canonical: false);
+    }
+  }
+
   String _formatSuggestionLabel(String drugName) {
     final trimmed = drugName.trim();
     if (trimmed.isEmpty) return drugName;
@@ -538,9 +672,8 @@ class DrugService {
       if (severity == SeverityLevel.unknown) continue;
 
       final normalizedDrugA = _normalizeForLookup(match.drugA);
-      final counterpart = normalizedDrugA == normalizedResolvedDrug
-          ? match.drugB
-          : match.drugA;
+      final counterpart =
+          normalizedDrugA == normalizedResolvedDrug ? match.drugB : match.drugA;
       final normalizedCounterpart = _normalizeForLookup(counterpart);
       final displayName = _formatSuggestionLabel(counterpart);
 
@@ -636,7 +769,8 @@ class DrugService {
         items.where((item) => item.severity == SeverityLevel.moderate).length;
     final lowCount =
         items.where((item) => item.severity == SeverityLevel.low).length;
-    final samplePartners = items.take(4).map((item) => item.drugName).join(', ');
+    final samplePartners =
+        items.take(4).map((item) => item.drugName).join(', ');
 
     final severitySummary = <String>[
       if (highCount > 0) '$highCount major',
@@ -650,7 +784,8 @@ class DrugService {
       highCount: highCount,
       moderateCount: moderateCount,
     );
-    final symptoms = highestRiskMatch != null ? _defaultSymptoms(highestRiskMatch) : '';
+    final symptoms =
+        highestRiskMatch != null ? _defaultSymptoms(highestRiskMatch) : '';
     final guidance = _defaultSingleDrugGuidance(
       highCount: highCount,
       moderateCount: moderateCount,
@@ -671,7 +806,8 @@ class DrugService {
   }
 
   String _buildPairCacheKey(String drug1, String drug2) {
-    final pair = [_normalizeForLookup(drug1), _normalizeForLookup(drug2)]..sort();
+    final pair = [_normalizeForLookup(drug1), _normalizeForLookup(drug2)]
+      ..sort();
     return '${pair[0]}|${pair[1]}';
   }
 
@@ -814,8 +950,7 @@ class DrugService {
 
   InteractionMatch? _highestRiskMatch(List<InteractionMatch> matches) {
     if (matches.isEmpty) return null;
-    final sorted = [...matches]
-      ..sort((a, b) {
+    final sorted = [...matches]..sort((a, b) {
         final severityCompare = _severityRank(_guessSeverity(a.level))
             .compareTo(_severityRank(_guessSeverity(b.level)));
         if (severityCompare != 0) return severityCompare;
@@ -862,7 +997,10 @@ class DrugService {
   }
 
   String _trimLeadingWatchFor(String text) {
-    return text.replaceFirst(RegExp(r'^(watch for|call your doctor promptly if you have)\s+', caseSensitive: false), '');
+    return text.replaceFirst(
+        RegExp(r'^(watch for|call your doctor promptly if you have)\s+',
+            caseSensitive: false),
+        '');
   }
 
   String _preferredSummaryDrugName(String drugName) {
