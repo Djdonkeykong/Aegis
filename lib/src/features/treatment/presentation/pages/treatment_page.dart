@@ -83,8 +83,8 @@ class _TreatmentCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final spacing = context.spacing;
     final schedule = medication.reminderTimes.isNotEmpty
-        ? medication.reminderTimes.join(', ')
-        : (medication.frequency ?? 'As needed');
+        ? '${medication.selectedDaysLabel} • ${medication.reminderTimes.join(', ')}'
+        : medication.selectedDaysLabel;
     final details = <String>[
       if (medication.dosage != null && medication.dosage!.isNotEmpty)
         medication.dosage!,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/theme_extensions.dart';
+import '../../../medications/domain/models/medication.dart';
 import '../../../medications/domain/providers/medication_providers.dart';
 
 class RemindersPage extends ConsumerWidget {
@@ -53,9 +54,10 @@ class RemindersPage extends ConsumerWidget {
               itemCount: medications.length,
               itemBuilder: (context, index) {
                 final med = medications[index];
-                final schedule = med.reminderTimes.isNotEmpty
+                final timeSummary = med.reminderTimes.isNotEmpty
                     ? med.reminderTimes.join(', ')
-                    : (med.frequency ?? 'No schedule set');
+                    : 'No dose time set';
+                final schedule = '${med.selectedDaysLabel} • $timeSummary';
                 return Card(
                   margin: EdgeInsets.only(bottom: spacing.s),
                   child: ListTile(
@@ -73,7 +75,9 @@ class RemindersPage extends ConsumerWidget {
                     ),
                     title: Text(med.name),
                     subtitle: Text(
-                      schedule,
+                      med.remindersEnabled
+                          ? '$schedule • ${med.reminderLabel}'
+                          : '$schedule • Reminders off',
                       style: textTheme.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),

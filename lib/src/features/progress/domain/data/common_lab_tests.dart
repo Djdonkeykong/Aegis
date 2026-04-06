@@ -1,0 +1,265 @@
+import '../models/lab_test_definition.dart';
+
+const commonLabTests = <LabTestDefinition>[
+  LabTestDefinition(
+    id: 'hba1c',
+    name: 'HbA1c',
+    loincCode: '4548-4',
+    category: 'Glucose control',
+    defaultUnit: '%',
+    supportedUnits: ['%'],
+    aliases: ['A1c', 'Glycated hemoglobin'],
+    summary: 'Average blood sugar over roughly 3 months.',
+    generalReferenceRanges: [
+      LabReferenceRange(
+        low: 4.0,
+        high: 5.6,
+        unit: '%',
+        source: LabRangeSource.fallbackGeneral,
+        label: 'General adult reference',
+        note:
+            'General adult fallback. Use the lab range on the report when available.',
+      ),
+    ],
+  ),
+  LabTestDefinition(
+    id: 'tsh',
+    name: 'TSH',
+    loincCode: '3016-3',
+    category: 'Thyroid',
+    defaultUnit: 'uIU/mL',
+    supportedUnits: ['uIU/mL', 'mIU/L'],
+    aliases: ['Thyroid stimulating hormone'],
+    summary: 'Common thyroid screening marker.',
+    generalReferenceRanges: [
+      LabReferenceRange(
+        low: 0.4,
+        high: 4.0,
+        unit: 'uIU/mL',
+        source: LabRangeSource.fallbackGeneral,
+        label: 'General adult reference',
+        note:
+            'General adult fallback. Pregnancy and lab method can change the target range.',
+      ),
+      LabReferenceRange(
+        low: 0.4,
+        high: 4.0,
+        unit: 'mIU/L',
+        source: LabRangeSource.fallbackGeneral,
+        label: 'General adult reference',
+        note:
+            'General adult fallback. Pregnancy and lab method can change the target range.',
+      ),
+    ],
+  ),
+  LabTestDefinition(
+    id: 'crp',
+    name: 'C-reactive protein',
+    loincCode: '1988-5',
+    category: 'Inflammation',
+    defaultUnit: 'mg/L',
+    supportedUnits: ['mg/L'],
+    aliases: ['CRP'],
+    summary: 'Inflammation marker often used to monitor acute changes.',
+    generalReferenceRanges: [
+      LabReferenceRange(
+        high: 10,
+        unit: 'mg/L',
+        source: LabRangeSource.fallbackGeneral,
+        label: 'General adult reference',
+        note:
+            'General adult fallback. Labs may use different lower detection limits.',
+      ),
+    ],
+  ),
+  LabTestDefinition(
+    id: 'wbc',
+    name: 'White blood cells',
+    loincCode: '6690-2',
+    category: 'Complete blood count',
+    defaultUnit: '10^9/L',
+    supportedUnits: ['10^9/L'],
+    aliases: ['WBC', 'Leukocytes'],
+    summary: 'Immune cell count from a CBC.',
+    generalReferenceRanges: [
+      LabReferenceRange(
+        low: 4.0,
+        high: 11.0,
+        unit: '10^9/L',
+        source: LabRangeSource.fallbackGeneral,
+        label: 'General adult reference',
+        note:
+            'General adult fallback. Lab ranges can vary with analyzer and patient context.',
+      ),
+    ],
+  ),
+  LabTestDefinition(
+    id: 'platelets',
+    name: 'Platelets',
+    loincCode: '777-3',
+    category: 'Complete blood count',
+    defaultUnit: '10^9/L',
+    supportedUnits: ['10^9/L'],
+    aliases: ['Platelet count'],
+    summary: 'Clotting cell count from a CBC.',
+    generalReferenceRanges: [
+      LabReferenceRange(
+        low: 150,
+        high: 450,
+        unit: '10^9/L',
+        source: LabRangeSource.fallbackGeneral,
+        label: 'General adult reference',
+        note: 'General adult fallback. Use the report range when available.',
+      ),
+    ],
+  ),
+  LabTestDefinition(
+    id: 'alt',
+    name: 'ALT',
+    loincCode: '1742-6',
+    category: 'Liver',
+    defaultUnit: 'U/L',
+    supportedUnits: ['U/L'],
+    aliases: ['Alanine aminotransferase'],
+    summary: 'Liver enzyme often tracked alongside AST.',
+    generalReferenceRanges: [
+      LabReferenceRange(
+        low: 7,
+        high: 56,
+        unit: 'U/L',
+        source: LabRangeSource.fallbackGeneral,
+        label: 'General adult reference',
+        note: 'General adult fallback. Some labs use sex-specific limits.',
+      ),
+    ],
+  ),
+  LabTestDefinition(
+    id: 'ast',
+    name: 'AST',
+    loincCode: '1920-8',
+    category: 'Liver',
+    defaultUnit: 'U/L',
+    supportedUnits: ['U/L'],
+    aliases: ['Aspartate aminotransferase'],
+    summary: 'Liver and muscle enzyme commonly paired with ALT.',
+    generalReferenceRanges: [
+      LabReferenceRange(
+        low: 10,
+        high: 40,
+        unit: 'U/L',
+        source: LabRangeSource.fallbackGeneral,
+        label: 'General adult reference',
+        note: 'General adult fallback. Use the report range when available.',
+      ),
+    ],
+  ),
+  LabTestDefinition(
+    id: 'vitamin_b12',
+    name: 'Vitamin B12',
+    loincCode: '2132-9',
+    category: 'Vitamins',
+    defaultUnit: 'pg/mL',
+    supportedUnits: ['pg/mL', 'pmol/L'],
+    aliases: ['B12', 'Cobalamin'],
+    summary: 'Vitamin B12 blood level.',
+    generalReferenceRanges: [
+      LabReferenceRange(
+        low: 200,
+        high: 900,
+        unit: 'pg/mL',
+        source: LabRangeSource.fallbackGeneral,
+        label: 'General adult reference',
+        note:
+            'General adult fallback. Borderline results may still need clinician review.',
+      ),
+    ],
+  ),
+  LabTestDefinition(
+    id: 'vitamin_d',
+    name: 'Vitamin D, 25-OH',
+    loincCode: '1989-3',
+    category: 'Vitamins',
+    defaultUnit: 'ng/mL',
+    supportedUnits: ['ng/mL', 'nmol/L'],
+    aliases: ['25-hydroxy vitamin D', 'Vitamin D'],
+    summary: 'Vitamin D storage level.',
+    generalReferenceRanges: [
+      LabReferenceRange(
+        low: 30,
+        high: 100,
+        unit: 'ng/mL',
+        source: LabRangeSource.fallbackGeneral,
+        label: 'General adult reference',
+        note: 'General adult fallback. Targets vary by lab and care plan.',
+      ),
+    ],
+  ),
+  LabTestDefinition(
+    id: 'glucose_fasting',
+    name: 'Glucose, fasting',
+    loincCode: '1558-6',
+    category: 'Glucose control',
+    defaultUnit: 'mg/dL',
+    supportedUnits: ['mg/dL', 'mmol/L'],
+    aliases: ['Fasting glucose'],
+    summary: 'Glucose result intended for fasting samples.',
+    generalReferenceRanges: [
+      LabReferenceRange(
+        low: 70,
+        high: 99,
+        unit: 'mg/dL',
+        source: LabRangeSource.fallbackGeneral,
+        label: 'General fasting reference',
+        note:
+            'Only use this fallback for fasting samples. Non-fasting samples need the lab interpretation.',
+      ),
+      LabReferenceRange(
+        low: 3.9,
+        high: 5.5,
+        unit: 'mmol/L',
+        source: LabRangeSource.fallbackGeneral,
+        label: 'General fasting reference',
+        note:
+            'Only use this fallback for fasting samples. Non-fasting samples need the lab interpretation.',
+      ),
+    ],
+  ),
+  LabTestDefinition(
+    id: 'creatinine',
+    name: 'Creatinine',
+    loincCode: '2160-0',
+    category: 'Renal',
+    defaultUnit: 'mg/dL',
+    supportedUnits: ['mg/dL', 'umol/L'],
+    aliases: ['Serum creatinine'],
+    summary:
+        'Kidney function marker that often needs patient-specific interpretation.',
+    note:
+        'No built-in fallback range is applied here because ranges commonly vary by lab and patient characteristics.',
+  ),
+  LabTestDefinition(
+    id: 'ferritin',
+    name: 'Ferritin',
+    loincCode: '2276-4',
+    category: 'Iron',
+    defaultUnit: 'ng/mL',
+    supportedUnits: ['ng/mL', 'ug/L'],
+    aliases: ['Serum ferritin'],
+    summary:
+        'Iron storage marker that often uses sex- and lab-specific reference ranges.',
+    note:
+        'No built-in fallback range is applied here because reference ranges vary substantially.',
+  ),
+  LabTestDefinition(
+    id: 'hemoglobin',
+    name: 'Hemoglobin',
+    loincCode: '718-7',
+    category: 'Complete blood count',
+    defaultUnit: 'g/dL',
+    supportedUnits: ['g/dL', 'mmol/L'],
+    aliases: ['Hb'],
+    summary: 'Oxygen-carrying protein in red blood cells.',
+    note:
+        'No built-in fallback range is applied here because interpretation often depends on sex, age, and pregnancy status.',
+  ),
+];

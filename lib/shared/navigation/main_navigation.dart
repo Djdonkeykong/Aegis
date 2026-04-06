@@ -5,8 +5,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/medcheck_icons.dart';
 import '../../src/features/home/presentation/pages/home_page.dart';
 import '../../src/features/interactions/presentation/pages/interaction_checker_page.dart';
+import '../../src/features/medications/presentation/pages/medications_page.dart';
 import '../../src/features/progress/presentation/pages/progress_page.dart';
-import '../../src/features/treatment/presentation/pages/treatment_page.dart';
 
 final selectedTabProvider = StateProvider<int>((ref) => 0);
 
@@ -21,7 +21,7 @@ class MainNavigation extends ConsumerWidget {
       HomePage(),
       InteractionCheckerPage(),
       ProgressPage(),
-      TreatmentPage(),
+      MedicationsPage(),
     ];
 
     return Scaffold(
@@ -93,7 +93,7 @@ class MainNavigation extends ConsumerWidget {
                     child: _NavigationItem(
                       icon: MedCheckIcons.chartBar,
                       selectedIcon: MedCheckIcons.chartBarFill,
-                      label: 'Progress',
+                      label: 'Lab Results',
                       isSelected: selectedIndex == 2,
                       onTap: () {
                         HapticFeedback.mediumImpact();
@@ -105,9 +105,9 @@ class MainNavigation extends ConsumerWidget {
                 Expanded(
                   child: Center(
                     child: _NavigationItem(
-                      icon: MedCheckIcons.firstAidKit,
-                      selectedIcon: MedCheckIcons.firstAidKitFill,
-                      label: 'Treatment',
+                      icon: Icons.medication_outlined,
+                      selectedIcon: Icons.medication,
+                      label: 'Medications',
                       isSelected: selectedIndex == 3,
                       onTap: () {
                         HapticFeedback.mediumImpact();

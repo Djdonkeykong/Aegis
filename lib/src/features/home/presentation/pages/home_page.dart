@@ -135,9 +135,10 @@ String _formatSelectedDate(DateTime date) =>
 String _dateKey(DateTime d) =>
     '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
-int _scheduledDoseCountForDay(List<Medication> medications) {
+int _scheduledDoseCountForDay(List<Medication> medications, DateTime day) {
   var count = 0;
   for (final medication in medications) {
+    if (!medication.appliesOn(day)) continue;
     count += medication.reminderTimes.isNotEmpty
         ? medication.reminderTimes.length
         : 1;
@@ -148,13 +149,13 @@ int _scheduledDoseCountForDay(List<Medication> medications) {
 bool _isDayFullyCompleted({
   required DateTime day,
   required List<Medication> medications,
-  required Map<String, Set<String>> log,
+  required Map<String, Map<String, MedicationDoseStatus>> log,
 }) {
-  final scheduledCount = _scheduledDoseCountForDay(medications);
+  final scheduledCount = _scheduledDoseCountForDay(medications, day);
   if (scheduledCount == 0) return false;
 
-  final takenCount = (log[_dateKey(day)] ?? {}).length;
-  return takenCount >= scheduledCount;
+  final resolvedCount = (log[_dateKey(day)] ?? {}).length;
+  return resolvedCount >= scheduledCount;
 }
 
 String _calendarViewModeLabel(CalendarViewMode mode) {
@@ -483,7 +484,7 @@ class _MonthlyCalendarView extends ConsumerWidget {
                                 color: AppColors.textPrimary,
                               ),
                     ),
-                    const Spacer(),
+                    SizedBox(width: spacing.s),
                     Text(
                       '${month.year}',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -491,7 +492,6 @@ class _MonthlyCalendarView extends ConsumerWidget {
                             fontWeight: FontWeight.w600,
                           ),
                     ),
-                    SizedBox(width: spacing.s),
                   ],
                 ),
               ),
@@ -1024,10 +1024,14 @@ class _DailyMedList extends ConsumerWidget {
     required this.onAdd,
   });
 
-  List<_ScheduledDoseEntry> _buildEntries(List<Medication> medications) {
+  List<_ScheduledDoseEntry> _buildEntries(
+    List<Medication> medications,
+    DateTime selectedDate,
+  ) {
     final entries = <_ScheduledDoseEntry>[];
 
     for (final medication in medications) {
+      if (!medication.appliesOn(selectedDate)) continue;
       final times = medication.reminderTimes.isNotEmpty
           ? medication.reminderTimes
           : const ['09:00'];
@@ -1085,8 +1089,9 @@ class _DailyMedList extends ConsumerWidget {
     BuildContext parentContext,
     WidgetRef ref,
     _ScheduledDoseEntry entry,
-    bool taken,
+    MedicationDoseStatus? status,
     String dateKey,
+    String displayName,
   ) {
     final spacing = parentContext.spacing;
     final medication = entry.medication;
@@ -1108,12 +1113,24 @@ class _DailyMedList extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  medication.name,
+                  displayName,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                 ),
-                SizedBox(height: spacing.s),
+                if (displayName.toLowerCase() != medication.name.toLowerCase())
+                  Padding(
+                    padding:
+                        EdgeInsets.only(top: spacing.xs, bottom: spacing.s),
+                    child: Text(
+                      medication.name,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                    ),
+                  )
+                else
+                  SizedBox(height: spacing.s),
                 _DoseDetailLine(
                   label: 'Time',
                   value: _formatDoseTime(context, entry.time),
@@ -1123,13 +1140,18 @@ class _DailyMedList extends ConsumerWidget {
                   value: medication.dosage ?? 'Not set',
                 ),
                 _DoseDetailLine(
-                  label: 'Frequency',
-                  value: medication.frequency ?? 'As needed',
+                  label: 'Selected days',
+                  value: medication.selectedDaysLabel,
                 ),
                 _DoseDetailLine(
                   label: 'Form',
                   value: medication.form.label,
                 ),
+                if (medication.remindersEnabled)
+                  _DoseDetailLine(
+                    label: 'Reminder',
+                    value: medication.reminderLabel,
+                  ),
                 if (medication.foodTiming != MedicationFoodTiming.noPreference)
                   _DoseDetailLine(
                     label: 'Food',
@@ -1147,12 +1169,40 @@ class _DailyMedList extends ConsumerWidget {
                     Expanded(
                       child: FilledButton(
                         onPressed: () {
-                          ref
-                              .read(medicationLogProvider.notifier)
-                              .toggle(dateKey, entry.logKey);
+                          ref.read(medicationLogProvider.notifier).setStatus(
+                                dateKey,
+                                entry.logKey,
+                                status == MedicationDoseStatus.taken
+                                    ? null
+                                    : MedicationDoseStatus.taken,
+                              );
                           Navigator.of(context).pop();
                         },
-                        child: Text(taken ? 'Mark Not Taken' : 'Mark Taken'),
+                        child: Text(
+                          status == MedicationDoseStatus.taken
+                              ? 'Mark Pending'
+                              : 'Mark Taken',
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: spacing.s),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          ref.read(medicationLogProvider.notifier).setStatus(
+                                dateKey,
+                                entry.logKey,
+                                status == MedicationDoseStatus.skipped
+                                    ? null
+                                    : MedicationDoseStatus.skipped,
+                              );
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          status == MedicationDoseStatus.skipped
+                              ? 'Undo Skip'
+                              : 'Skip Dose',
+                        ),
                       ),
                     ),
                     SizedBox(width: spacing.s),
@@ -1185,13 +1235,18 @@ class _DailyMedList extends ConsumerWidget {
     final selectedDate = ref.watch(selectedDateProvider);
     final dateKey = _dateKey(selectedDate);
     final log = ref.watch(medicationLogProvider);
-    final takenSet = log[dateKey] ?? {};
-    final entries = _buildEntries(medications);
+    final aliases = ref.watch(medicationAliasesProvider).valueOrNull ??
+        const <String, List<String>>{};
+    final statusMap = log[dateKey] ?? const <String, MedicationDoseStatus>{};
+    final entries = _buildEntries(medications, selectedDate);
     final widgets = <Widget>[];
     String? currentSection;
 
     for (final entry in entries) {
-      final taken = takenSet.contains(entry.logKey);
+      final status = statusMap[entry.logKey];
+      final displayName =
+          aliases[entry.medication.name.trim().toLowerCase()]?.first ??
+              entry.medication.name;
       if (entry.sectionLabel != currentSection) {
         currentSection = entry.sectionLabel;
         widgets.add(_DoseSectionHeader(title: currentSection));
@@ -1200,16 +1255,23 @@ class _DailyMedList extends ConsumerWidget {
       widgets.add(
         _DailyDoseCard(
           medication: entry.medication,
-          taken: taken,
+          displayName: displayName,
+          status: status,
           timeLabel: _formatDoseTime(context, entry.time),
           cardKey: entry.logKey,
           onToggle: () {
             ref
                 .read(medicationLogProvider.notifier)
-                .toggle(dateKey, entry.logKey);
+                .toggleTaken(dateKey, entry.logKey);
           },
-          onTap: () =>
-              _showDoseDetailsSheet(context, ref, entry, taken, dateKey),
+          onTap: () => _showDoseDetailsSheet(
+            context,
+            ref,
+            entry,
+            status,
+            dateKey,
+            displayName,
+          ),
           onEdit: () {
             Navigator.of(context).push(
               MaterialPageRoute(
@@ -1301,7 +1363,8 @@ class _DoseSectionHeader extends StatelessWidget {
 
 class _DailyDoseCard extends StatelessWidget {
   final Medication medication;
-  final bool taken;
+  final String displayName;
+  final MedicationDoseStatus? status;
   final String timeLabel;
   final String cardKey;
   final VoidCallback onTap;
@@ -1311,7 +1374,8 @@ class _DailyDoseCard extends StatelessWidget {
 
   const _DailyDoseCard({
     required this.medication,
-    required this.taken,
+    required this.displayName,
+    required this.status,
     required this.onTap,
     required this.cardKey,
     required this.onToggle,
@@ -1343,6 +1407,9 @@ class _DailyDoseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTaken = status == MedicationDoseStatus.taken;
+    final isSkipped = status == MedicationDoseStatus.skipped;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Slidable(
@@ -1389,9 +1456,11 @@ class _DailyDoseCard extends StatelessWidget {
               color: const Color(0xFFF9FAFB),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: taken
+                color: isTaken
                     ? AppColors.success.withValues(alpha: 0.3)
-                    : Colors.white,
+                    : isSkipped
+                        ? AppColors.warning.withValues(alpha: 0.35)
+                        : Colors.white,
                 width: 1.5,
               ),
               boxShadow: [
@@ -1409,7 +1478,11 @@ class _DailyDoseCard extends StatelessWidget {
                   width: 24,
                   height: 24,
                   colorFilter: ColorFilter.mode(
-                    taken ? AppColors.success : AppColors.primary,
+                    isTaken
+                        ? AppColors.success
+                        : isSkipped
+                            ? AppColors.warning
+                            : AppColors.primary,
                     BlendMode.srcIn,
                   ),
                 ),
@@ -1420,15 +1493,18 @@ class _DailyDoseCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        medication.name,
+                        displayName,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: taken
+                              color: isTaken || isSkipped
                                   ? AppColors.textSecondary
                                   : AppColors.textPrimary,
-                              decoration:
-                                  taken ? TextDecoration.lineThrough : null,
+                              decoration: isTaken || isSkipped
+                                  ? TextDecoration.lineThrough
+                                  : null,
                             ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -1452,9 +1528,11 @@ class _DailyDoseCard extends StatelessWidget {
                         timeLabel,
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: taken
+                                  color: isTaken
                                       ? AppColors.textSecondary
-                                      : AppColors.textPrimary,
+                                      : isSkipped
+                                          ? AppColors.warning
+                                          : AppColors.textPrimary,
                                   fontWeight: FontWeight.w500,
                                 ),
                       ),
@@ -1466,20 +1544,31 @@ class _DailyDoseCard extends StatelessWidget {
                           height: 28,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: taken
+                            color: isTaken
                                 ? AppColors.successContainer
-                                : AppColors.surface,
+                                : isSkipped
+                                    ? AppColors.warningContainer
+                                    : AppColors.surface,
                             border: Border.all(
-                              color:
-                                  taken ? AppColors.success : AppColors.outline,
+                              color: isTaken
+                                  ? AppColors.success
+                                  : isSkipped
+                                      ? AppColors.warning
+                                      : AppColors.outline,
                             ),
                           ),
                           child: Icon(
-                            taken ? Icons.check_rounded : Icons.circle_outlined,
-                            size: taken ? 18 : 16,
-                            color: taken
+                            isTaken
+                                ? Icons.check_rounded
+                                : isSkipped
+                                    ? Icons.close_rounded
+                                    : Icons.circle_outlined,
+                            size: isTaken || isSkipped ? 18 : 16,
+                            color: isTaken
                                 ? AppColors.success
-                                : AppColors.textTertiary,
+                                : isSkipped
+                                    ? AppColors.warning
+                                    : AppColors.textTertiary,
                           ),
                         ),
                       ),

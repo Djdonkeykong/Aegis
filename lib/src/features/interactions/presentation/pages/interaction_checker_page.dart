@@ -45,11 +45,11 @@ class _InteractionCheckerPageState
     final d2 = _drug2Controller.text.trim();
 
     if (_singleMode && d1.isEmpty) {
-      setState(() => _errorMessage = 'Please enter a drug name');
+      setState(() => _errorMessage = 'Please enter a medication name');
       return;
     }
     if (!_singleMode && (d1.isEmpty || d2.isEmpty)) {
-      setState(() => _errorMessage = 'Please enter both drug names');
+      setState(() => _errorMessage = 'Please enter both medication names');
       return;
     }
 
@@ -122,23 +122,10 @@ class _InteractionCheckerPageState
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Mode toggle
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildModeChip(
-                    context: context,
-                    label: 'Two Drugs',
-                    selected: !_singleMode,
-                    onSelected: () => _setMode(false),
-                  ),
-                  SizedBox(width: spacing.m),
-                  _buildModeChip(
-                    context: context,
-                    label: 'One Drug',
-                    selected: _singleMode,
-                    onSelected: () => _setMode(true),
-                  ),
-                ],
+              _ModeToggle(
+                singleMode: _singleMode,
+                onSelectSingle: () => _setMode(true),
+                onSelectPair: () => _setMode(false),
               ),
 
               SizedBox(height: spacing.l),
@@ -157,7 +144,7 @@ class _InteractionCheckerPageState
                         child: CircularProgressIndicator(strokeWidth: 2),
                       ),
                       SizedBox(width: 8),
-                      Text('Loading drug database...'),
+                      Text('Loading medication database...'),
                     ],
                   ),
                 ),
@@ -179,14 +166,14 @@ class _InteractionCheckerPageState
               // Search fields
               DrugSearchField(
                 controller: _drug1Controller,
-                label: _singleMode ? 'Drug name' : 'Drug 1',
+                label: _singleMode ? 'Medication name' : 'Medication 1',
               ),
 
               if (!_singleMode) ...[
                 SizedBox(height: spacing.m),
                 DrugSearchField(
                   controller: _drug2Controller,
-                  label: 'Drug 2',
+                  label: 'Medication 2',
                 ),
               ],
 
@@ -320,33 +307,130 @@ class _InteractionCheckerPageState
         ..add(SeverityLevel.high);
     });
   }
+}
 
-  Widget _buildModeChip({
-    required BuildContext context,
-    required String label,
-    required bool selected,
-    required VoidCallback onSelected,
-  }) {
-    return ChoiceChip(
-      label: Text(
-        label,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: selected
-                  ? AppColors.onPrimaryContainer
-                  : AppColors.textPrimary,
-              fontWeight: FontWeight.w600,
-            ),
+class _ModeToggle extends StatelessWidget {
+  const _ModeToggle({
+    required this.singleMode,
+    required this.onSelectSingle,
+    required this.onSelectPair,
+  });
+
+  final bool singleMode;
+  final VoidCallback onSelectSingle;
+  final VoidCallback onSelectPair;
+
+  @override
+  Widget build(BuildContext context) {
+    final spacing = context.spacing;
+
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppColors.surface.withValues(alpha: 0.96),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppColors.outline),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withValues(alpha: 0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
-      selected: selected,
-      showCheckmark: true,
-      color: WidgetStateProperty.resolveWith<Color?>((states) {
-        if (states.contains(WidgetState.selected)) {
-          return AppColors.primaryContainer;
-        }
-        return AppColors.surface;
-      }),
-      side: const BorderSide(color: AppColors.outline),
-      onSelected: (_) => onSelected(),
+      child: Row(
+        children: [
+          Expanded(
+            child: _ModeToggleButton(
+              label: 'Two Medications',
+              icon: Icons.compare_arrows_rounded,
+              selected: !singleMode,
+              onTap: onSelectPair,
+            ),
+          ),
+          SizedBox(width: spacing.xs),
+          Expanded(
+            child: _ModeToggleButton(
+              label: 'One Medication',
+              icon: Icons.medication_rounded,
+              selected: singleMode,
+              onTap: onSelectSingle,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ModeToggleButton extends StatelessWidget {
+  const _ModeToggleButton({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final textStyle = Theme.of(context).textTheme.labelLarge?.copyWith(
+          color: selected ? AppColors.onPrimary : AppColors.textPrimary,
+          fontWeight: FontWeight.w700,
+        );
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOutCubic,
+      decoration: BoxDecoration(
+        color: selected ? AppColors.primary : AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: selected ? AppColors.primary : AppColors.outline,
+        ),
+        boxShadow: selected
+            ? [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.22),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ]
+            : const [],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 18,
+                  color:
+                      selected ? AppColors.onPrimary : AppColors.textSecondary,
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    label,
+                    overflow: TextOverflow.ellipsis,
+                    style: textStyle,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

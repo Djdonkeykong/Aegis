@@ -1,4 +1,7 @@
+import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../../core/constants/app_constants.dart';
 import '../../../interactions/domain/services/openfda_service.dart';
 import '../models/medication.dart';
 
@@ -27,31 +30,59 @@ final medicationListProvider =
   return MedicationListNotifier();
 });
 
-// Tracks which medications have been taken on which dates.
-// State: Map<"yyyy-MM-dd", Set<medicationId>>
-class MedicationLogNotifier extends StateNotifier<Map<String, Set<String>>> {
+enum MedicationDoseStatus { taken, skipped }
+
+// State: Map<"yyyy-MM-dd", Map<doseLogKey, MedicationDoseStatus>>
+class MedicationLogNotifier
+    extends StateNotifier<Map<String, Map<String, MedicationDoseStatus>>> {
   MedicationLogNotifier() : super({});
 
-  void toggle(String dateKey, String medId) {
-    final current = Map<String, Set<String>>.from(state);
-    final daySet = Set<String>.from(current[dateKey] ?? {});
-    if (daySet.contains(medId)) {
-      daySet.remove(medId);
+  void setStatus(
+    String dateKey,
+    String medId,
+    MedicationDoseStatus? status,
+  ) {
+    final current = Map<String, Map<String, MedicationDoseStatus>>.from(state);
+    final dayMap =
+        Map<String, MedicationDoseStatus>.from(current[dateKey] ?? {});
+
+    if (status == null) {
+      dayMap.remove(medId);
     } else {
-      daySet.add(medId);
+      dayMap[medId] = status;
     }
-    current[dateKey] = daySet;
+
+    if (dayMap.isEmpty) {
+      current.remove(dateKey);
+    } else {
+      current[dateKey] = dayMap;
+    }
+
     state = current;
   }
 
+  void toggleTaken(String dateKey, String medId) {
+    final currentStatus = statusFor(dateKey, medId);
+    setStatus(
+      dateKey,
+      medId,
+      currentStatus == MedicationDoseStatus.taken
+          ? null
+          : MedicationDoseStatus.taken,
+    );
+  }
+
+  MedicationDoseStatus? statusFor(String dateKey, String medId) {
+    return state[dateKey]?[medId];
+  }
+
   bool isTaken(String dateKey, String medId) {
-    return state[dateKey]?.contains(medId) ?? false;
+    return statusFor(dateKey, medId) == MedicationDoseStatus.taken;
   }
 }
 
-final medicationLogProvider =
-    StateNotifierProvider<MedicationLogNotifier, Map<String, Set<String>>>(
-        (ref) {
+final medicationLogProvider = StateNotifierProvider<MedicationLogNotifier,
+    Map<String, Map<String, MedicationDoseStatus>>>((ref) {
   return MedicationLogNotifier();
 });
 
@@ -69,4 +100,18 @@ final medicationReferenceProvider =
 
   final service = ref.read(openFdaMedicationServiceProvider);
   return service.fetchMedicationReference(trimmed);
+});
+
+final medicationAliasesProvider =
+    FutureProvider<Map<String, List<String>>>((ref) async {
+  final raw = await rootBundle.loadString(AppConstants.drugAliasesAsset);
+  final decoded = jsonDecode(raw) as Map<String, dynamic>;
+
+  return {
+    for (final entry in decoded.entries)
+      entry.key.trim().toLowerCase(): (entry.value as List<dynamic>)
+          .map((alias) => alias.toString().trim())
+          .where((alias) => alias.isNotEmpty)
+          .toList(),
+  };
 });
